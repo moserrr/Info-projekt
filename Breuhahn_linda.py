@@ -1,0 +1,1 @@
+print("Hallo ich bin Linda und gehöre zum Team")
