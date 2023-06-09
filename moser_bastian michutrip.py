@@ -1,62 +1,63 @@
 import pygame
 import sys
+import random
 
  
 
-# Initialisieren Sie Pygame
+# Initialize Pygame
 pygame.init()
 
  
 
-# Definieren Sie die Größe des Bildschirms
+# Define the size of the screen
 screen_width = 800
 screen_height = 600
 screen_size = (screen_width, screen_height)
 
  
 
-# Erstellen Sie den Bildschirm
+# Create the screen
 screen = pygame.display.set_mode(screen_size)
-pygame.display.set_caption("Startknopf")
+pygame.display.set_caption("Start Button")
 
  
 
-# Definieren Sie Farben
+# Define colors
 ROSA = (255, 192, 203)
 BLACK = (0, 0, 0)
 YELLOW = (255, 255, 0)
 
  
 
-# Definieren Sie die Größe und Position des Startknopfs
+# Define the size and position of the start button
 button_width = 200
 button_height = 100
 button_pos = ((screen_width - button_width) // 2, (screen_height - button_height) // 2)
 
  
 
-# Definieren Sie die Schriftart und Größe für den Text des Startknopfs
+# Define the font and size for the start button text
 font = pygame.font.Font(None, 40)
 
  
 
-# Definieren Sie den Text des Startknopfs
+# Define the text for the start button
 text = font.render("Start", True, BLACK)
 
  
 
-# Definieren Sie das Rechteck für den Startknopf
+# Define the rectangle for the start button
 button_rect = pygame.Rect(button_pos, (button_width, button_height))
 
  
 
-# Variable, um den Startknopf anzuzeigen oder zu verbergen
+# Variable to show or hide the start button
 button_visible = True
 
  
 
-# Schleife, um den Bildschirm geöffnet zu halten
-while True:
+# Game loop to keep the start screen open
+while button_visible:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -69,42 +70,69 @@ while True:
 
  
 
-    # Hintergrund zeichnen
+    # Clear the previous frame
     screen.fill(ROSA)
 
  
 
-    if button_visible:
-        # Startknopf zeichnen
-        pygame.draw.rect(screen, YELLOW, button_rect)
-        screen.blit(text, (button_pos[0] + 70, button_pos[1] + 30))
-
-    if not button.visible
-    # Set up game variables
-platform_width, platform_height = 150, 40
-platform_x = size[0] // 2 - platform_width // 2
-platform_y = 1
-platform_speed = 5
+    # Draw the start button
+    pygame.draw.rect(screen, YELLOW, button_rect)
+    screen.blit(text, (button_pos[0] + 70, button_pos[1] + 30))
 
  
 
-# Laden Sie das Bild
+    # Update the screen
+    pygame.display.update()
+
+ 
+
+# Set up game variables
+platform_width, platform_height = 150, 40
+platform_speed = 1
+
+ 
+
+# Load the image
 player_image = pygame.image.load("MicrosoftTeams-image (6).png")
 
  
 
-# Erhalten Sie die Größe des Bildes
+# Get the size of the image
 player_width, player_height = player_image.get_rect().size
 
  
 
-# Setzen Sie die Startposition des Bildes
-player_x = size[0] // 2 - player_width // 2
-player_y = size[1] - player_height
+# Set the initial position of the image
+player_x = screen_width // 2 - player_width // 2
+player_y = screen_height - player_height
 
  
 
-# Schleife, um das Fenster geöffnet zu halten
+# List to store platform positions
+platforms = []
+
+ 
+
+# Number of platforms to create
+num_platforms = 5
+
+ 
+
+# Generate random platform positions
+for _ in range(num_platforms):
+    x = random.randint(0, screen_width - platform_width)
+    y = random.randint(0, screen_height - platform_height)
+    platforms.append(pygame.Rect(x, y, platform_width, platform_height))
+
+ 
+
+# Variables for player jumping
+jumping = False
+jump_count = 10
+
+ 
+
+# Game loop to keep the game window open
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -113,7 +141,7 @@ while True:
 
  
 
-    # Bewegen Sie den Balken nach links oder rechts
+    # Move the player left or right
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
         player_x -= platform_speed
@@ -122,48 +150,57 @@ while True:
 
  
 
-    # Begrenzen Sie die Position des Balkens innerhalb des Fensters
+    # Limit the position of the player within the window
     if player_x < 0:
         player_x = 0
-    elif player_x > size[0] - player_width:
-        player_x = size[0] - player_width
+    elif player_x > screen_width - player_width:
+        player_x = screen_width - player_width
 
  
 
-    # Löschen Sie den vorherigen Frame
-    screen.fill((255, 192, 203))
+    # Player jumping logic
+    if not jumping:
+        for platform in platforms:
+            if platform.colliderect(pygame.Rect(player_x, player_y, player_width, player_height)):
+                jumping = True
+                jump_count = 10
+                player_y = platform.y - player_height
+                break
+        else:
+            player_y += platform_speed
 
  
 
-    # Zeichnen Sie den Balken
-    pygame.draw.rect(screen, (255, 255, 0), (platform_x, platform_y, platform_width, platform_height))
+    else:
+        if jump_count >= -10:
+            neg = 1
+            if jump_count < 0:
+                neg = -1
+            player_y -= (jump_count ** 2) * 0.9 * neg
+            jump_count -= 1
+        else:
+            jumping = False
 
  
 
-    # Zeichnen Sie das Bild
+    # Clear the previous frame
+    screen.fill(ROSA)
+
+ 
+
+    # Draw the platforms
+    for platform in platforms:
+        pygame.draw.rect(screen, YELLOW, platform)
+
+ 
+
+    # Draw the player
     screen.blit(player_image, (player_x, player_y))
 
  
 
-    # Aktualisieren Sie den Bildschirm
-    pygame.display.update()
-    
-
- 
-
-    # Bildschirm aktualisieren
+    # Update the screen
     pygame.display.update()
 
-    
-
-
- 
-
-
-
- 
-
-
- 
 
 
